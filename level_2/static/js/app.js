@@ -2,47 +2,87 @@
 var tableData = data;
 // YOUR CODE HERE!
 let table_data = data;
+// define a function to create the unique list
+function unique_list(index){
+    return Array.from(new Set((index)));
+}
 
-
-const date_all = data.map(data => data.datetime)
-const city_all = data.map(data => data.city)
-const state_all = data.map(data => data.state)
-const country_all = data.map(data => data.country)
-const shape_all = data.map(data => data.shape)
+// make the data for all filters: date, city, state, country, shape
+let date_all = unique_list(table_data.map(table_data => table_data.datetime))
+let city_all = unique_list(table_data.map(table_data => table_data.city))
+let state_all = unique_list(table_data.map(table_data => table_data.state))
+let country_all = unique_list(table_data.map(table_data => table_data.country))
+let shape_all = unique_list(table_data.map(table_data => table_data.shape))
+// make list for filter and a "place_holder" to loop and add all options
 const filter_list = [date_all, city_all, state_all, country_all, shape_all]
-const filter_all = ['date/time', 'city', 'state', 'country', 'shape'];
 const place_holder = ['input a date', 'input a city', 'input a state', 'input country', 'input a shape']
-let total_info = {
-                  select_1: {filter: -1, input: 0}, 
-                  select_2: {filter: -1, input: 0},
-                  select_3: {filter: -1, input: 0},
-                  select_4: {filter: -1, input: 0},
-                  select_5: {filter: -1, input: 0}
+// to add all date options to the list because it is sorted, so it is not necessary to sort
+filter_list[0].splice(0, 0, place_holder[0])
+// use a loop to sort and add all other options to a list
+for (let i = 1; i < 5; i++){
+    filter_list[i].sort()
+    filter_list[i].splice(0, 0, place_holder[i])
+}
+// make a filter to make a list
+const filter_all = ['datetime', 'city', 'state', 'country', 'shape'];
+
+// add all the options to selects and add a index to simplify the later code
+
+for (let i = 0; i < 5; i++){
+    const filter_ele = filter_all[i]
+    const list_ele = filter_list[i]
+    j = 0
+    list_ele.forEach((ele) => {
+        let select = document.getElementById(filter_ele);
+        let option = document.createElement('option');
+        option.text = ele;
+        option.value = j;
+        j = j + 1;
+        select.add(option);
+    })
+}
+// make a dictionary to store all index
+let index_total = {datetime: 0, city: 0, state: 0, country: 0, shape: 0};
+
+// make the data array based on dictionary with index
+function remake_data(index_dict){
+    // make a dynamic data as a template varible inside
+    let dynamic_data = table_data;
+    // run a loop to go through the index_dict
+    for (let i = 0; i < 5; i++){
+        let order = filter_all[i]
+        const date_input = index_dict[order];
+        // if any selection changed it will change the table
+        if (date_input != 0){
+            let temp_list = [];
+            // use a loop to generate the new table
+            for (let k = 0; k < dynamic_data.length; k++){
+                let datas = dynamic_data[k];
+                let datetime_inside = datas[order];
+                if (datetime_inside === filter_list[i][date_input]){
+                    temp_list.push(datas)
                 }
-function maketable(info){
+            }
+            dynamic_data = temp_list
+        }
+    }
+    return dynamic_data;
+}
+
+// key function to make and fresh the table
+function maketable(data){
+    // find the table
     let table = document.getElementById('ufo-table');
+    // find the tag: tr
     let rowtable = table.getElementsByTagName('tr');
+    // get the length of the row
     let rowCount = rowtable.length; 
+    // use the delete method to delete all existed rows as a refreshment
     for (let x = rowCount - 1; x > 0; x--){
         table.deleteRow(x);
     }
-    let new_data = table_data;
-    for (let key in info){
-        let index = info[key];
-        console.log(key)
-        index = index.filter;
-        let input = info[key];
-        input = input.input
-        if (input.includes(filter_list[index])){
-            new_data = new_data.map(function(datas){
-                let datetime_inside = datas.filter_list[index];
-                if (datetime_inside === input) {
-                    return datas;
-                }
-            })
-        }
-    }
-    new_data.forEach((UFO) => {
+    // loop the data to make the new table
+    data.forEach((UFO) => {
         var tableRef = table.getElementsByTagName('tbody')[0];
         let newRow = tableRef.insertRow(tableRef.rows.length);
         let content = ""
@@ -53,73 +93,52 @@ function maketable(info){
     })
 }
 
-maketable(total_info)
+maketable(table_data)
 
+// make the function to collect the selection result
+function select_date()
+{
+    const select_value = document.getElementById('datetime').value;
+    index_total.datetime = parseInt(select_value);
+    maketable(remake_data(index_total));
+}
 
+function select_city()
+{
+    const select_value = document.getElementById('city').value;
+    index_total.city = parseInt(select_value);
+    maketable(remake_data(index_total));
+}
 
-select_all.forEach((ele) => {
-    option_added(ele)
-})
+function select_state()
+{
+    const select_value = document.getElementById('state').value;
+    index_total.state = parseInt(select_value);
+    maketable(remake_data(index_total));
+}
 
-function option_added(val){
-    let i = -1;
-    option_all.forEach((ele) => {
-        let select1 = document.getElementById(val);
-        let option = document.createElement('option');
-        option.text = ele;
-        option.value = i;
-        i = i + 1;
-        select1.add(option);
+function select_country()
+{
+    const select_value = document.getElementById('country').value;
+    index_total.country = parseInt(select_value);
+    maketable(remake_data(index_total));
+}
+
+function select_shape()
+{
+    const select_value = document.getElementById('shape').value;
+    index_total.shape = parseInt(select_value);
+    maketable(remake_data(index_total));
+}
+
+// make the function to reset the selection.
+const reset_click = d3.select("#reset_button");
+reset_click.on("click", function() {
+    // Select the current count
+    filter_all.forEach(function(name){
+        const select_index = document.getElementById(name);
+        select_index.selectedIndex = 0;
     })
-}
-
-function checkvalue1()
-{
-    const select_value = document.getElementById('select1').value;
-    document.getElementById('input1').placeholder = place_holder[select_value];
-    total_info.select_1.filter = select_value
-}
-
-function checkvalue2()
-{
-    const select_value = document.getElementById('select2').value;
-    document.getElementById('input2').placeholder = place_holder[select_value];
-    total_info.select_2.filter = select_value
-}
-
-function checkvalue3()
-{
-    const select_value = document.getElementById('select3').value;
-    document.getElementById('input3').placeholder = place_holder[select_value];
-    total_info.select_3.filter = select_value
-}
-
-function checkvalue4()
-{
-    const select_value = document.getElementById('select4').value;
-    document.getElementById('input4').placeholder = place_holder[select_value];
-    total_info.select_4.filter = select_value
-}
-
-function checkvalue5()
-{
-    const select_value = document.getElementById('select5').value;
-    document.getElementById('input5').placeholder = place_holder[select_value];
-    total_info.select_5.filter = select_value
-}
-
-const input_click_1 = d3.select("#input1");
-const input_click_2 = d3.select("#input2");
-const input_click_3 = d3.select("#input3");
-const input_click_4 = d3.select("#input4");
-const input_click_5 = d3.select("#input5");
-
-
-input_click_1.on("change", function() {
-    // get the input value
-    total_info.select_1.input = d3.event.target.value;
-
+    index_total = {datetime: 0, city: 0, state: 0, country: 0, shape: 0};
+    maketable(table_data)
 });
-
-
-

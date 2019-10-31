@@ -37,32 +37,32 @@
                     <ul class="list-group" id="filters">
                       <li class="filter list-group-item">
                         <label for="date">Date/time</label>
-                        <select name="color" id = 'date' onchange='checkvalue1()'>  
+                        <select name="color" id = 'datetime' onchange='select_date()'>  
                         </select> 
                       </li>
                       <li class="filter list-group-item">
                         <label for="date">city</label>
-                        <select name="color" id = 'city' onchange='checkvalue2()'> 
+                        <select name="color" id = 'city' onchange='select_city()'> 
                         </select>
                       </li>
                       <li class="filter list-group-item">
                         <label for="date">state</label>
-                        <select name="color" id = 'state' onchange='checkvalue3()'> 
+                        <select name="color" id = 'state' onchange='select_state()'> 
                         </select>
                       </li>
                       <li class="filter list-group-item">
                         <label for="date">country</label>
-                        <select name="color" id = 'country' onchange='checkvalue4()'> 
+                        <select name="color" id = 'country' onchange='select_country()'> 
                         </select>
                       </li>
                       <li class="filter list-group-item">
                         <label for="date">shape</label>
-                        <select name="color" id = 'shape' onchange='checkvalue5()'> 
+                        <select name="color" id = 'shape' onchange='select_shape()'> 
                         </select>
                       </li>
                     </ul>
                   </div>
-                  <button id="filter-btn" type="button" class="btn btn-default">Filter Table</button>
+                  <button id="reset_button" type="button" class="btn btn-default">Reset</button>
                 </form>
               </div>
             </div>
